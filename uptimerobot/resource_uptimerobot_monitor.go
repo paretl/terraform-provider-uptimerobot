@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	uptimerobotapi "github.com/louy/terraform-provider-uptimerobot/uptimerobot/api"
+	uptimerobotapi "github.com/paretl/terraform-provider-uptimerobot/uptimerobot/api"
 )
 
 func resourceMonitor() *schema.Resource {
@@ -61,6 +61,11 @@ func resourceMonitor() *schema.Resource {
 				Type:     schema.TypeInt,
 				Optional: true,
 				Default:  300,
+			},
+			"http_method": {
+				Type:     	  schema.TypeString,
+				Optional: 	  true,
+				ValidateFunc: validation.StringInSlice(uptimerobotapi.MonitorHTTPMethod, false),
 			},
 			"http_username": {
 				Type:     schema.TypeString,
