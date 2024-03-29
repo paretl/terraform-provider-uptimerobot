@@ -8,7 +8,7 @@ description: |-
 
 # Resource: uptimerobot_alert_contact
 
-Use this resource to create an alert contact
+Use this resource to create an alert contact in UptimeRobot.
 
 ## Example Usage
 

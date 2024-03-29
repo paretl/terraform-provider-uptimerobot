@@ -8,7 +8,7 @@ description: |-
 
 # Resource: uptimerobot_status_page
 
-Use this resource to create a status page
+Use this resource to create a status page in UptimeRobot.
 
 ## Example Usage
 

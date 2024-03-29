@@ -1,18 +1,18 @@
 # Terraform UptimeRobot Provider
 
 [![All Contributors](https://img.shields.io/badge/all_contributors-14-orange.svg?style=flat-square)](#contributors-)
-[![Build Status](https://github.com/louy/terraform-provider-uptimerobot/workflows/test/badge.svg)](https://github.com/louy/terraform-provider-uptimerobot/actions?query=branch%3Amaster+workflow%3Atest)
+[![Build Status](https://github.com/paretl/terraform-provider-uptimerobot/workflows/test/badge.svg)](https://github.com/paretl/terraform-provider-uptimerobot/actions?query=branch%3Amaster+workflow%3Atest)
 
 ## Getting started
 
-To install this provider, check out the installation instructions on [Terraform's registry page](https://registry.terraform.io/providers/louy/uptimerobot/latest).
+To install this provider, check out the installation instructions on [Terraform's registry page](https://registry.terraform.io/providers/paretl/uptimerobot/latest).
 
 ```tf
 terraform {
   required_providers {
     uptimerobot = {
-      source = "louy/uptimerobot"
-      version = "0.5.1"
+      source = "paretl/uptimerobot"
+      version = "1.0.0"
     }
   }
 }

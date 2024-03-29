@@ -67,6 +67,7 @@ func TestUptimeRobotDataResourceMonitor_http_post_monitor(t *testing.T) {
 	var Type = "http"
 	var URL = "https://google.com"
 	var Method = "POST"
+	var PostType = "raw"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },
 		Providers:    testAccProviders,
@@ -79,13 +80,19 @@ func TestUptimeRobotDataResourceMonitor_http_post_monitor(t *testing.T) {
 					type          = "%s"
 					url           = "%s"
 					http_method   = "%s"
+					post_type	  = "%s"
+					post_value	  =  = {
+						"key":"value"
+					}
 				}
-				`, FriendlyName, Type, URL, Method),
+				`, FriendlyName, Type, URL, Method, PostType),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "friendly_name", FriendlyName),
 					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "type", Type),
 					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "url", URL),
 					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "http_method", Method),
+					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "post_type", PostType),
+					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "post_value", PostValue),
 				),
 			},
 			resource.TestStep{

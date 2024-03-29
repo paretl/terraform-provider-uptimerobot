@@ -17,6 +17,12 @@ var monitorType = map[string]int{
 }
 var MonitorType = mapKeys(monitorType)
 
+var monitorPostType = map[string]int{
+	"key-value":    1,
+	"raw data": 	2,
+}
+var MonitorPostType = mapKeys(monitorPostType)
+
 var monitorSubType = map[string]int{
 	"http":   1,
 	"https":  2,
@@ -43,13 +49,12 @@ var monitorKeywordType = map[string]int{
 var MonitorKeywordType = mapKeys(monitorKeywordType)
 
 var monitorHTTPMethod = map[string]int{
-	"HEAD":  1,
-	"GET":  2,
-	"POST": 3,
-	"PUT": 4,
-	"PATCH": 5,
-	"DELETE": 6,
-	"OPTIONS": 7,
+	"GET":  1,
+	"POST": 2,
+	"PUT": 3,
+	"PATCH": 4,
+	"DELETE": 5,
+	"OPTIONS": 6,
 }
 var MonitorHTTPMethod = mapKeys(monitorHTTPMethod)
 
@@ -88,6 +93,10 @@ type Monitor struct {
 	CustomHTTPHeaders map[string]string
 
 	AlertContacts []MonitorAlertContact
+
+	HTTPMethod string `json:"http_method"`
+	PostType string `json:"post_type"`
+	PostValue map[string]string
 }
 
 func (client UptimeRobotApiClient) GetMonitor(id int) (m Monitor, err error) {
@@ -96,6 +105,9 @@ func (client UptimeRobotApiClient) GetMonitor(id int) (m Monitor, err error) {
 	data.Add("ssl", fmt.Sprintf("%d", 1))
 	data.Add("custom_http_headers", fmt.Sprintf("%d", 1))
 	data.Add("alert_contacts", fmt.Sprintf("%d", 1))
+	data.Add("http_method", fmt.Sprintf("%d", 1))
+	data.Add("post_type", fmt.Sprintf("%d", 1))
+	data.Add("post_value", fmt.Sprintf("%d", 1))
 
 	body, err := client.MakeCall(
 		"getMonitors",
@@ -126,6 +138,8 @@ func (client UptimeRobotApiClient) GetMonitor(id int) (m Monitor, err error) {
 	m.Type = intToString(monitorType, int(monitor["type"].(float64)))
 	m.Status = intToString(monitorStatus, int(monitor["status"].(float64)))
 	m.Interval = int(monitor["interval"].(float64))
+	m.HTTPMethod = monitor["http_method"].(string)
+	m.PostType = monitor["post_type"].(string)
 
 	switch m.Type {
 	case "port":
@@ -169,6 +183,12 @@ func (client UptimeRobotApiClient) GetMonitor(id int) (m Monitor, err error) {
 		customHTTPHeaders[k] = v.(string)
 	}
 	m.CustomHTTPHeaders = customHTTPHeaders
+
+	postValue := make(map[string]string)
+	for k, v := range monitor["post_value"].(map[string]interface{}) {
+		postValue[k] = v.(string)
+	}
+	m.PostValue = postValue
 
 	if contacts := monitor["alert_contacts"].([]interface{}); contacts != nil {
 		m.AlertContacts = make([]MonitorAlertContact, len(contacts))
@@ -214,6 +234,10 @@ type MonitorCreateRequest struct {
 	AlertContacts []MonitorRequestAlertContact
 
 	CustomHTTPHeaders map[string]string
+
+	HTTPMethod string
+	PostType string
+	PostValue map[string]string
 }
 
 func (client UptimeRobotApiClient) CreateMonitor(req MonitorCreateRequest) (m Monitor, err error) {
@@ -222,6 +246,9 @@ func (client UptimeRobotApiClient) CreateMonitor(req MonitorCreateRequest) (m Mo
 	data.Add("url", req.URL)
 	data.Add("type", fmt.Sprintf("%d", monitorType[req.Type]))
 	data.Add("interval", fmt.Sprintf("%d", req.Interval))
+	data.Add("http_method", fmt.Sprintf("%d", req.HTTPMethod))
+	data.Add("post_type", fmt.Sprintf("%d", req.PostType))
+
 	switch req.Type {
 	case "port":
 		data.Add("sub_type", fmt.Sprintf("%d", monitorSubType[req.SubType]))
@@ -259,6 +286,14 @@ func (client UptimeRobotApiClient) CreateMonitor(req MonitorCreateRequest) (m Mo
 		jsonData, err := json.Marshal(req.CustomHTTPHeaders)
 		if err == nil {
 			data.Add("custom_http_headers", string(jsonData))
+		}
+	}
+
+	// post value
+	if len(req.PostValue) > 0 {
+		jsonData, err := json.Marshal(req.PostValue)
+		if err == nil {
+			data.Add("post_value", string(jsonData))
 		}
 	}
 
@@ -298,6 +333,10 @@ type MonitorUpdateRequest struct {
 	AlertContacts []MonitorRequestAlertContact
 
 	CustomHTTPHeaders map[string]string
+
+	HTTPMethod string
+	PostType string
+	PostValue map[string]string
 }
 
 func (client UptimeRobotApiClient) UpdateMonitor(req MonitorUpdateRequest) (m Monitor, err error) {
@@ -307,6 +346,9 @@ func (client UptimeRobotApiClient) UpdateMonitor(req MonitorUpdateRequest) (m Mo
 	data.Add("url", req.URL)
 	data.Add("type", fmt.Sprintf("%d", monitorType[req.Type]))
 	data.Add("interval", fmt.Sprintf("%d", req.Interval))
+	data.Add("http_method", fmt.Sprintf("%d", req.HTTPMethod))
+	data.Add("post_type", fmt.Sprintf("%d", req.PostType))
+
 	switch req.Type {
 	case "port":
 		data.Add("sub_type", fmt.Sprintf("%d", monitorSubType[req.SubType]))
@@ -346,8 +388,18 @@ func (client UptimeRobotApiClient) UpdateMonitor(req MonitorUpdateRequest) (m Mo
 			data.Add("custom_http_headers", string(jsonData))
 		}
 	} else {
-		//delete custom http headers when it is empty
+		// delete custom http headers when it is empty
 		data.Add("custom_http_headers", "{}")
+	}
+
+	// post value
+	if len(req.PostValue) > 0 {
+		jsonData, err := json.Marshal(req.PostValue)
+		if err == nil {
+			data.Add("post_value", string(jsonData))
+		}
+	} else {
+		data.Add("post_value", "{}")
 	}
 
 	_, err = client.MakeCall(
