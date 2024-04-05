@@ -7,11 +7,11 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	"github.com/louy/terraform-provider-uptimerobot/uptimerobot/api"
+	"github.com/mindee/terraform-provider-uptimerobot/uptimerobot/api"
 )
 
 func TestUptimeRobotDataResourceAlertContact_email(t *testing.T) {
-	var email = "louay+tftest@alakkad.me"
+	var email = "louis.paret@mindee.net"
 	var friendlyName = "TF Test: Email"
 	resource.Test(t, resource.TestCase{
 		PreCheck:     func() { testAccPreCheck(t) },

@@ -8,7 +8,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/resource"
 	"github.com/hashicorp/terraform-plugin-sdk/terraform"
-	uptimerobotapi "github.com/louy/terraform-provider-uptimerobot/uptimerobot/api"
+	uptimerobotapi "github.com/mindee/terraform-provider-uptimerobot/uptimerobot/api"
 )
 
 func TestUptimeRobotDataResourceMonitor_http_monitor(t *testing.T) {
@@ -50,6 +50,49 @@ func TestUptimeRobotDataResourceMonitor_http_monitor(t *testing.T) {
 				`, FriendlyName, Type, URL2),
 				Check: resource.ComposeTestCheckFunc(
 					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "url", URL2),
+				),
+			},
+			resource.TestStep{
+				ResourceName:      "uptimerobot_monitor.test",
+				ImportState:       true,
+				ImportStateVerify: true,
+			},
+		},
+	})
+}
+
+
+func TestUptimeRobotDataResourceMonitor_http_post_monitor(t *testing.T) {
+	var FriendlyName = "TF Test: http monitor"
+	var Type = "http"
+	var URL = "https://google.com"
+	var Method = "POST"
+	var PostType = "raw"
+	resource.Test(t, resource.TestCase{
+		PreCheck:     func() { testAccPreCheck(t) },
+		Providers:    testAccProviders,
+		CheckDestroy: testAccCheckMonitorDestroy,
+		Steps: []resource.TestStep{
+			resource.TestStep{
+				Config: fmt.Sprintf(`
+				resource "uptimerobot_monitor" "test" {
+					friendly_name = "%s"
+					type          = "%s"
+					url           = "%s"
+					http_method   = "%s"
+					post_type	  = "%s"
+					post_value	  =  = {
+						"key":"value"
+					}
+				}
+				`, FriendlyName, Type, URL, Method, PostType),
+				Check: resource.ComposeTestCheckFunc(
+					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "friendly_name", FriendlyName),
+					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "type", Type),
+					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "url", URL),
+					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "http_method", Method),
+					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "post_type", PostType),
+					resource.TestCheckResourceAttr("uptimerobot_monitor.test", "post_value", PostValue),
 				),
 			},
 			resource.TestStep{

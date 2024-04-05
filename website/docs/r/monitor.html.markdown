@@ -8,7 +8,7 @@ description: |-
 
 # Resource: uptimerobot_monitor
 
-Use this resource to create a monitor
+Use this resource to create a monitor in UptimeRobot.
 
 ## Example Usage
 
@@ -48,6 +48,26 @@ resource "uptimerobot_monitor" "my_website" {
   - `basic`
   - `digest`
 * `interval` - the interval for the monitoring check (300 seconds by default).
+* `http_method` - the HTTP method to be used. Can be one of the following:
+  - `GET`
+  - `POST`
+  - `PUT`
+  - `PATCH`
+  - `DELETE`
+  - `OPTIONS`
+* `post_content_type` - sets the Content-Type for POST, PUT, PATCH, DELETE, OPTIONS HTTP methods. Can be one of the following:
+  - `text/html`
+  - `application/json`
+* `post_type` - the format of data to be sent with POST, PUT, PATCH, DELETE, OPTIONS HTTP methods. Can be one of the following:
+  - `key-value`
+  - `raw`
+* `post_value` - the data to be sent with POST, PUT, PATCH, DELETE, OPTIONS HTTP methods. Must be a JSON object.
+* `alert_contact` - the alert contact to notify. The options are:
+  - `id` - the ID of the alert contact to notify
+  - `threshold` - the maximum number of recurrence of the alert to send
+  - `recurrence` - the number of recurrence of the alert to send
+* `ignore_ssl_errors` - for ignoring SSL certificate related errors. `false` by default.
+* `custom_http_headers` - insert custom HTTP headers into the monitor. Must be a JSON object.
 
 ## Attributes Reference
 

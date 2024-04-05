@@ -1,3 +1,7 @@
+# v0.6.0
+- resource monitor: support for POST queries with http_method / post_type / post_value / post_content_type by [@paretl]
+- fix: release workflow by [@paretl]
+
 # v0.5.1
 - release: Removed the tar.gz release format to fix issue with tf registry
 

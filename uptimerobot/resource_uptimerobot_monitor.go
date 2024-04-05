@@ -7,7 +7,7 @@ import (
 
 	"github.com/hashicorp/terraform-plugin-sdk/helper/schema"
 	"github.com/hashicorp/terraform-plugin-sdk/helper/validation"
-	uptimerobotapi "github.com/louy/terraform-provider-uptimerobot/uptimerobot/api"
+	uptimerobotapi "github.com/mindee/terraform-provider-uptimerobot/uptimerobot/api"
 )
 
 func resourceMonitor() *schema.Resource {
@@ -62,6 +62,11 @@ func resourceMonitor() *schema.Resource {
 				Optional: true,
 				Default:  300,
 			},
+			"http_method": {
+				Type:     	  schema.TypeString,
+				Optional: 	  true,
+				ValidateFunc: validation.StringInSlice(uptimerobotapi.MonitorHTTPMethod, false),
+			},
 			"http_username": {
 				Type:     schema.TypeString,
 				Optional: true,
@@ -84,6 +89,20 @@ func resourceMonitor() *schema.Resource {
 				Type:     schema.TypeBool,
 				Optional: true,
 				Default:  false,
+			},
+			"post_type": {
+				Type:      schema.TypeString,
+				Optional:  true,
+				ValidateFunc: validation.StringInSlice(uptimerobotapi.MonitorPostType, false),
+			},
+			"post_content_type": {
+				Type:      schema.TypeString,
+				Optional:  true,
+				ValidateFunc: validation.StringInSlice(uptimerobotapi.MonitorPostContentType, false),
+			},
+			"post_value": {
+				Type:     schema.TypeMap,
+				Optional: true,
 			},
 			"alert_contact": {
 				Type:     schema.TypeList,
@@ -110,7 +129,6 @@ func resourceMonitor() *schema.Resource {
 				Type:     schema.TypeMap,
 				Optional: true,
 			},
-			// TODO - mwindows
 		},
 	}
 }
@@ -144,9 +162,23 @@ func resourceMonitorCreate(d *schema.ResourceData, m interface{}) error {
 
 	// Add optional attributes
 	req.Interval = d.Get("interval").(int)
-
 	req.IgnoreSSLErrors = d.Get("ignore_ssl_errors").(bool)
+	req.HTTPMethod = d.Get("http_method").(string)
 
+	switch req.HTTPMethod {
+	case "POST":
+		req.PostType = d.Get("post_type").(string)
+		req.PostContentType = d.Get("post_content_type").(string)
+		// post_value
+		postValueMap := d.Get("post_value").(map[string]interface{})
+		req.PostValue = make(map[string]string, len(postValueMap))
+		for k, v := range postValueMap {
+			req.PostValue[k] = v.(string)
+		}
+		break
+	}
+
+	// Alert contact
 	req.AlertContacts = make([]uptimerobotapi.MonitorRequestAlertContact, len(d.Get("alert_contact").([]interface{})))
 	for k, v := range d.Get("alert_contact").([]interface{}) {
 		req.AlertContacts[k] = uptimerobotapi.MonitorRequestAlertContact{
@@ -226,7 +258,22 @@ func resourceMonitorUpdate(d *schema.ResourceData, m interface{}) error {
 	// Add optional attributes
 	req.Interval = d.Get("interval").(int)
 	req.IgnoreSSLErrors = d.Get("ignore_ssl_errors").(bool)
+	req.HTTPMethod = d.Get("http_method").(string)
 
+	switch req.HTTPMethod {
+	case "POST":
+		req.PostType = d.Get("post_type").(string)
+		req.PostContentType = d.Get("post_content_type").(string)
+		// post_value
+		postValueMap := d.Get("post_value").(map[string]interface{})
+		req.PostValue = make(map[string]string, len(postValueMap))
+		for k, v := range postValueMap {
+			req.PostValue[k] = v.(string)
+		}
+		break
+	}
+
+	// Alert contact
 	req.AlertContacts = make([]uptimerobotapi.MonitorRequestAlertContact, len(d.Get("alert_contact").([]interface{})))
 	for k, v := range d.Get("alert_contact").([]interface{}) {
 		req.AlertContacts[k] = uptimerobotapi.MonitorRequestAlertContact{
@@ -289,8 +336,16 @@ func updateMonitorResource(d *schema.ResourceData, m uptimerobotapi.Monitor) err
 
 	d.Set("ignore_ssl_errors", m.IgnoreSSLErrors)
 
+	d.Set("http_method", m.HTTPMethod)
+	d.Set("post_type", m.PostType)
+	d.Set("post_content_type", m.PostContentType)
+
 	if err := d.Set("custom_http_headers", m.CustomHTTPHeaders); err != nil {
 		return fmt.Errorf("error setting custom_http_headers for resource %s: %s", d.Id(), err)
+	}
+
+	if err := d.Set("post_value", m.PostValue); err != nil {
+		return fmt.Errorf("error setting post_value for resource %s: %s", d.Id(), err)
 	}
 
 	rawContacts := make([]map[string]interface{}, len(m.AlertContacts))

@@ -156,7 +156,7 @@ func (client UptimeRobotApiClient) CreateAlertContact(req AlertContactCreateRequ
 	// places the API does correctly handle it as a string value.
 	// The difference made by it being a string is that a zero prefix to the ID // number is preserved. A zero prefixed alert contact ID is thus far only
 	// been observed on the default alert contact (created at account creation).
-	// https://github.com/louy/terraform-provider-uptimerobot/pull/21
+	// https://github.com/mindee/terraform-provider-uptimerobot/pull/21
 	return client.GetAlertContact(fmt.Sprintf("%.0f", alertcontact["id"].(float64)))
 }
 
