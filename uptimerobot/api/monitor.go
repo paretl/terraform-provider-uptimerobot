@@ -84,6 +84,7 @@ type Monitor struct {
 	Type         string `json:"type"`
 	Status       string `json:"status"`
 	Interval     int    `json:"interval"`
+	Timeout      int    `json:"timeout"`
 
 	SubType string `json:"sub_type"`
 	Port    int    `json:"port"`
@@ -231,6 +232,7 @@ type MonitorCreateRequest struct {
 	URL          string
 	Type         string
 	Interval     int
+	Timeout      int
 
 	SubType string
 	Port    int
@@ -260,6 +262,7 @@ func (client UptimeRobotApiClient) CreateMonitor(req MonitorCreateRequest) (m Mo
 	data.Add("url", req.URL)
 	data.Add("type", fmt.Sprintf("%d", monitorType[req.Type]))
 	data.Add("interval", fmt.Sprintf("%d", req.Interval))
+	data.Add("monitor_interval", fmt.Sprintf("%d", req.Timeout))
 	data.Add("http_method", fmt.Sprintf("%d", monitorHTTPMethod[req.HTTPMethod]))
 
 	switch req.Type {
@@ -334,6 +337,7 @@ type MonitorUpdateRequest struct {
 	URL          string
 	Type         string
 	Interval     int
+	Timeout      int
 
 	SubType string
 	Port    int
@@ -364,6 +368,7 @@ func (client UptimeRobotApiClient) UpdateMonitor(req MonitorUpdateRequest) (m Mo
 	data.Add("url", req.URL)
 	data.Add("type", fmt.Sprintf("%d", monitorType[req.Type]))
 	data.Add("interval", fmt.Sprintf("%d", req.Interval))
+	data.Add("monitor_interval", fmt.Sprintf("%d", req.Timeout))
 	data.Add("http_method", fmt.Sprintf("%d", monitorHTTPMethod[req.HTTPMethod]))
 
 	switch req.Type {

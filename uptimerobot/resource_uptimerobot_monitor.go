@@ -62,6 +62,11 @@ func resourceMonitor() *schema.Resource {
 				Optional: true,
 				Default:  300,
 			},
+			"timeout": {
+				Type:     schema.TypeInt,
+				Optional: true,
+				Default:  30,
+			},
 			"http_method": {
 				Type:     	  schema.TypeString,
 				Optional: 	  true,
@@ -162,6 +167,7 @@ func resourceMonitorCreate(d *schema.ResourceData, m interface{}) error {
 
 	// Add optional attributes
 	req.Interval = d.Get("interval").(int)
+	req.Timeout = d.Get("timeout").(int)
 	req.IgnoreSSLErrors = d.Get("ignore_ssl_errors").(bool)
 	req.HTTPMethod = d.Get("http_method").(string)
 
@@ -257,6 +263,7 @@ func resourceMonitorUpdate(d *schema.ResourceData, m interface{}) error {
 
 	// Add optional attributes
 	req.Interval = d.Get("interval").(int)
+	req.Timeout = d.Get("timeout").(int)
 	req.IgnoreSSLErrors = d.Get("ignore_ssl_errors").(bool)
 	req.HTTPMethod = d.Get("http_method").(string)
 
@@ -322,6 +329,7 @@ func updateMonitorResource(d *schema.ResourceData, m uptimerobotapi.Monitor) err
 	d.Set("type", m.Type)
 	d.Set("status", m.Status)
 	d.Set("interval", m.Interval)
+	d.Set("timeout", m.Timeout)
 
 	d.Set("sub_type", m.SubType)
 	d.Set("port", m.Port)

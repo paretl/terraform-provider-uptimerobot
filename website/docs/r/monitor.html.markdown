@@ -48,6 +48,7 @@ resource "uptimerobot_monitor" "my_website" {
   - `basic`
   - `digest`
 * `interval` - the interval for the monitoring check (300 seconds by default).
+* `timeout` - timeout duration for monitoring check (30 seconds by default).
 * `http_method` - the HTTP method to be used. Can be one of the following:
   - `GET`
   - `POST`
