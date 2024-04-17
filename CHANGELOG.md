@@ -1,3 +1,6 @@
+# v1.1.1
+- resource monitor: fix support for timeout by [@paretl]
+
 # v1.1.0
 - resource monitor: support for timeout by [@paretl]
 
